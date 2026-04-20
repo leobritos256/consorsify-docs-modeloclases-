@@ -6,200 +6,93 @@
   <title>Diagrama de clases · Consorsify</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
   <style>
+    /* Reset básico para evitar scrolls fantasmas */
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     body {
       font-family: 'Inter', system-ui, sans-serif;
       background: #0f1117;
       color: #e8ecf4;
-      min-height: 100vh;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
+      overflow-x: hidden; /* Evita el corte lateral en Confluence */
     }
 
-    header {
-      padding: 28px 36px 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+    header { padding: 20px 24px; }
+    h1 { font-size: 24px; color: #e8ecf4; margin-bottom: 8px; }
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: #8b7ff5;
-      background: rgba(139,127,245,0.1);
-      border: 1px solid rgba(139,127,245,0.22);
-      padding: 4px 12px;
-      border-radius: 20px;
-      width: fit-content;
-      margin-bottom: 10px;
-    }
-
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #8b7ff5;
-      animation: pulse 2.4s ease-in-out infinite;
-    }
-
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
-
-    h1 {
-      font-size: 30px;
-      font-weight: 600;
-      letter-spacing: -.02em;
-      color: #e8ecf4;
-      line-height: 1.2;
-      margin-bottom: 12px;
-    }
-
-    .chips {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
-
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #161b27;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 13px;
-      color: #8891aa;
-    }
-
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      margin: 20px 36px;
-    }
-
+    /* Contenedor optimizado para Confluence */
     .diagram-wrap {
       flex: 1;
-      padding: 0 36px 36px;
-    }
-
-    .scroll-hint {
+      width: 100%;
+      padding: 10px;
       display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: #4a5168;
-      margin-bottom: 10px;
+      justify-content: center;
     }
 
     #diagram-box {
       width: 100%;
-      overflow-x: auto;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.1);
+      max-width: 100%;
       background: #13171f;
-      padding: 20px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.1) transparent;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 15px;
+      /* Permite scroll si el diagrama es muy ancho pero no corta la visualización */
+      overflow: auto; 
     }
 
-    #diagram-box::-webkit-scrollbar { height: 5px; }
-    #diagram-box::-webkit-scrollbar-track { background: transparent; }
-    #diagram-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
-
+    /* Ajuste de escala para que el SVG no se corte */
     #diagram-box svg {
       display: block;
-      min-width: 1600px; /* Aumentado para dar aire a las fuentes más grandes */
+      width: 100%;
+      height: auto;
+      max-width: 100%; 
     }
 
-    /* AJUSTES DE LEGIBILIDAD PARA EL CONTENIDO DEL SVG */
-    #diagram-box svg text,
-    #diagram-box svg .nodeLabel,
-    #diagram-box svg .edgeLabel,
-    #diagram-box svg .label,
-    #diagram-box svg .classLabel .label,
-    #diagram-box svg g.classGroup text {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-      font-size: 14px !important; /* Texto de atributos y métodos más grande */
-      fill: #ffffff !important;   /* Color blanco puro para mejor contraste */
+    /* Estilos de fuente mejorados para legibilidad */
+    #diagram-box svg text {
+      font-family: 'Inter', sans-serif !important;
+      fill: #ffffff !important;
     }
 
-    #diagram-box svg .classTitleText {
-      font-family: 'Inter', system-ui, sans-serif !important;
-      font-size: 18px !important; /* Títulos de clase destacados */
-      font-weight: 700 !important;
-      fill: #8b7ff5 !important;   /* Color temático para los títulos */
-    }
-
-    #diagram-box svg .edgeLabel p {
-      font-size: 13px !important;
-      color: #c9c3f8 !important;
-    }
-
-    #diagram-box svg .edgeTerminals {
-      font-family: 'Inter', system-ui, sans-serif !important;
-      font-size: 12px !important;
+    /* Títulos de clase con mayor peso visual */
+    .classTitleText {
+      font-size: 18px !important;
       font-weight: 600 !important;
+      fill: #8b7ff5 !important;
     }
 
-    footer {
-      padding: 14px 36px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
+    /* Atributos y métodos */
+    .nodeLabel, .label, g.classGroup text {
+      font-size: 14px !important;
     }
 
-    .footer-l { font-size: 13px; color: #4a5168; }
-    .footer-l strong { color: #6b7590; font-weight: 500; }
-    .footer-r { font-size: 12px; color: #4a5168; font-family: monospace; }
+    /* Ajuste de las líneas de relación */
+    .edgeLabel {
+      font-size: 12px !important;
+      fill: #aab2c8 !important;
+    }
   </style>
 </head>
 <body>
 
 <header>
-  <div>
-    <div class="eyebrow"><span class="dot"></span> Modelo de dominio</div>
-    <h1>Diagrama de clases · Consorsify</h1>
-    <div class="chips">
-      <span class="chip">
-        <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><rect x=".5" y=".5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".7"/><rect x="5" y=".5" width="3.5" height="3.5" rx=".8" fill="currentColor"/><rect x=".5" y="5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".4"/><rect x="5" y="5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".7"/></svg>
-        15 clases
-      </span>
-      <span class="chip">17 relaciones</span>
-    </div>
-  </div>
+  <h1>Diagrama de Clases - Consorsify</h1>
 </header>
 
-<div class="divider"></div>
-
 <div class="diagram-wrap">
-  <div class="scroll-hint">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5h8M6.5 3.5l2 2-2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Desplazate horizontalmente para ver todas las clases con claridad
-  </div>
   <div id="diagram-box">
-    <svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2049.1875 1295.5" role="graphics-document document">
-       </svg>
+    <svg id="my-svg" 
+         viewBox="0 0 2050 1300" 
+         preserveAspectRatio="xMidYMid meet" 
+         xmlns="http://www.w3.org/2000/svg">
+         
+      </svg>
   </div>
 </div>
-
-<footer>
-  <div class="footer-l"><strong>Consorsify</strong> — Arquitectura de software optimizada</div>
-  <div class="footer-r">classDiagram · Inter Font Scaling</div>
-</footer>
 
 </body>
 </html>
