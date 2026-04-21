@@ -1,98 +1,231 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Diagrama de clases · Consorsify</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap" rel="stylesheet">
-  <style>
-    /* Reset básico para evitar scrolls fantasmas */
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #0f1117;
-      color: #e8ecf4;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-      overflow-x: hidden; /* Evita el corte lateral en Confluence */
-    }
+<style>
+#cd5{width:100%;overflow-x:auto}
+#cd5 svg{min-width:1300px}
+</style>
+<h2 class="sr-only">Diagrama de clases Consorsify</h2>
+<div id="cd5"></div>
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
 
-    header { padding: 20px 24px; }
-    h1 { font-size: 24px; color: #e8ecf4; margin-bottom: 8px; }
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  // 2. Cambiamos "Anthropic Sans" por "Inter"
+  fontFamily: '"Inter", sans-serif', 
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '11px',
+    fontFamily: '"Inter", sans-serif', // También lo actualizamos aquí
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: dark ? '#c2c0b6' : '#3d3d3a',
+    primaryColor: dark ? '#3C3489' : '#EEEDFE',
+    primaryTextColor: dark ? '#CECBF6' : '#26215C',
+    primaryBorderColor: dark ? '#7F77DD' : '#534AB7',
+    secondaryColor: dark ? '#085041' : '#E1F5EE',
+    tertiaryColor: dark ? '#444441' : '#F1EFE8',
+  },
+});
 
-    /* Contenedor optimizado para Confluence */
-    .diagram-wrap {
-      flex: 1;
-      width: 100%;
-      padding: 10px;
-      display: flex;
-      justify-content: center;
-    }
+const diagram = `classDiagram
+  direction TB
 
-    #diagram-box {
-      width: 100%;
-      max-width: 100%;
-      background: #13171f;
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 8px;
-      padding: 15px;
-      /* Permite scroll si el diagrama es muy ancho pero no corta la visualización */
-      overflow: auto; 
-    }
+  class Usuario {
+    +UUID id
+    +String email
+    +String password
+    +String nombre
+    +String apellido
+    +Enum rol
+    +String telefono
+    +String avatar
+    +login(email, password)
+    +register(data)
+    +updateProfile(data)
+    +updateNotificationPreferences(prefs)
+  }
 
-    /* Ajuste de escala para que el SVG no se corte */
-    #diagram-box svg {
-      display: block;
-      width: 100%;
-      height: auto;
-      max-width: 100%; 
-    }
+  class Notificacion {
+    +UUID id
+    +String titulo
+    +String mensaje
+    +Enum tipo
+    +Boolean leida
+    +String link
+    +create(usuarioId, data)
+    +markAsRead(id)
+    +clearAll(usuarioId)
+  }
 
-    /* Estilos de fuente mejorados para legibilidad */
-    #diagram-box svg text {
-      font-family: 'Inter', sans-serif !important;
-      fill: #ffffff !important;
-    }
+  class Consorcio {
+    +UUID id
+    +String nombre
+    +String direccion
+    +Float tasaInteres
+    +DateTime fechaCreacion
+    +addUnit(unidadData)
+    +updateInterestRate(tasa)
+    +getGeneralStats(periodo)
+    +calculateMonthlyExpenses(periodo)
+  }
 
-    /* Títulos de clase con mayor peso visual */
-    .classTitleText {
-      font-size: 18px !important;
-      font-weight: 600 !important;
-      fill: #8b7ff5 !important;
-    }
+  class Unidad {
+    +UUID id
+    +String numero
+    +String piso
+    +Float coeficiente
+    +calculateCurrentDebt()
+    +assignOwner(usuarioId)
+    +assignTenant(usuarioId)
+    +getHistory()
+  }
 
-    /* Atributos y métodos */
-    .nodeLabel, .label, g.classGroup text {
-      font-size: 14px !important;
-    }
+  class Comprobante {
+    +UUID id
+    +String descripcion
+    +Float monto
+    +String categoria
+    +Enum tipo
+    +DateTime fecha
+    +createVoucher(data)
+    +listByPeriod(consorcioId, periodo)
+  }
 
-    /* Ajuste de las líneas de relación */
-    .edgeLabel {
-      font-size: 12px !important;
-      fill: #aab2c8 !important;
-    }
-  </style>
-</head>
-<body>
+  class Expensa {
+    +UUID id
+    +String periodo
+    +Float montoTotal
+    +Enum estado
+    +calculatePeriodTotal(consId, periodo)
+    +generateBreakdown()
+  }
 
-<header>
-  <h1>Diagrama de Clases - Consorsify</h1>
-</header>
+  class Liquidacion {
+    +UUID id
+    +String periodo
+    +Float expensasComunes
+    +Float expensasExtraordinarias
+    +Float deudaAnterior
+    +Float interes
+    +Float total
+    +Float montoPagado
+    +DateTime fechaVencimiento
+    +Enum estado
+    +generateMass(consId, periodo, fechaVenc)
+    +updateStatus()
+    +calculateInterests()
+  }
 
-<div class="diagram-wrap">
-  <div id="diagram-box">
-    <svg id="my-svg" 
-         viewBox="0 0 2050 1300" 
-         preserveAspectRatio="xMidYMid meet" 
-         xmlns="http://www.w3.org/2000/svg">
-         
-      </svg>
-  </div>
-</div>
+  class Pago {
+    +UUID id
+    +Float monto
+    +Enum metodoPago
+    +String nroRecibo
+    +String adjunto
+    +Enum estado
+    +reportPayment(data)
+    +approve(id)
+    +cancel(motivo)
+    +generateReceiptNumber()
+  }
 
-</body>
-</html>
+  class Reclamo {
+    +UUID id
+    +String asunto
+    +String descripcion
+    +Enum estado
+    +Enum prioridad
+    +create(data)
+    +changeStatus(nuevoEstado)
+    +assignPriority(nivel)
+  }
+
+  class Comentario {
+    +UUID id
+    +String contenido
+    +UUID usuarioId
+    +String nombreUsuario
+    +post(reclamoId, contenido)
+    +delete(id)
+  }
+
+  class Anuncio {
+    +UUID id
+    +String titulo
+    +String contenido
+    +DateTime fechaEvento
+    +publish(consId, data)
+  }
+
+  class Propuesta {
+    +UUID id
+    +String titulo
+    +String descripcion
+    +Float monto
+    +DateTime fechaCierre
+    +Enum estado
+    +registerVote(usuarioId, valor)
+    +closeVoting()
+    +calculateResults()
+  }
+
+  class Voto {
+    +UUID id
+    +Boolean valor
+    +cast(usuarioId, valor)
+  }
+
+  class Presupuesto {
+    +UUID id
+    +String proveedor
+    +String descripcion
+    +Float monto
+    +String adjunto
+    +upload(propuestaId, data)
+  }
+
+  Consorcio "1" --> "0..*" Unidad : contiene
+  Consorcio "1" --> "0..*" Comprobante : registra
+  Consorcio "1" --> "0..*" Expensa : resume
+  Consorcio "1" --> "0..*" Reclamo : gestiona
+  Consorcio "1" --> "0..*" Anuncio : publica
+  Consorcio "1" --> "0..*" Propuesta : propone
+
+  Usuario "1" --> "0..*" Unidad : propietario/inquilino
+  Usuario "1" --> "0..*" Notificacion : recibe
+  Usuario "1" --> "0..*" Voto : emite
+  Usuario "1" --> "0..*" Comentario : escribe
+
+  Unidad "1" --> "0..*" Liquidacion : genera
+  Unidad "1" --> "0..*" Pago : registra
+  Unidad "1" --> "0..*" Reclamo : origina
+
+  Liquidacion "1" --> "0..*" Pago : incluye
+
+  Reclamo "1" --> "0..*" Comentario : tiene
+
+  Propuesta "1" --> "0..*" Presupuesto : adjunta
+  Propuesta "1" --> "0..*" Voto : recibe
+`;
+
+const { svg } = await mermaid.render('cd5-svg', diagram);
+document.getElementById('cd5').innerHTML = svg;
+
+document.querySelectorAll('#cd5 svg .node').forEach(node => {
+  const fp = node.querySelector('path[d]');
+  if (!fp) return;
+  const nums = fp.getAttribute('d').match(/-?[\d.]+/g)?.map(Number);
+  if (!nums || nums.length < 8) return;
+  const xs=[nums[0],nums[2],nums[4],nums[6]], ys=[nums[1],nums[3],nums[5],nums[7]];
+  const x=Math.min(...xs), y=Math.min(...ys), w=Math.max(...xs)-x, h=Math.max(...ys)-y;
+  const rect=document.createElementNS('http://www.w3.org/2000/svg','rect');
+  rect.setAttribute('x',x); rect.setAttribute('y',y);
+  rect.setAttribute('width',w); rect.setAttribute('height',h); rect.setAttribute('rx','8');
+  for(const a of['fill','stroke','stroke-width','class','style'])
+    if(fp.hasAttribute(a)) rect.setAttribute(a,fp.getAttribute(a));
+  fp.replaceWith(rect);
+});
+</script>
+
