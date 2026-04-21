@@ -1,206 +1,252 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Diagrama de clases · Consorsify</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<style>
+  /* Contenedor flexible para Confluence */
+  #cd5 {
+    width: 100%;
+    overflow: hidden; /* Evita scrolls dobles */
+    background: #13171f;
+    border-radius: 8px;
+    padding: 20px;
+  }
+  
+  /* Forzamos que el SVG ocupe el 100% sin cortarse */
+  #cd5 svg {
+    width: 100% !important;
+    height: auto !important;
+    max-width: 100%;
+    display: block;
+  }
+</style>
 
-    body {
-      font-family: 'Inter', system-ui, sans-serif;
-      background: #0f1117;
-      color: #e8ecf4;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-    }
+<h2 class="sr-only">Diagrama de clases Consorsify</h2>
+<div id="cd5"></div>
 
-    header {
-      padding: 28px 36px 0;
-      display: flex;
-      align-items: flex-start;
-      justify-content: space-between;
-      gap: 20px;
-      flex-wrap: wrap;
-    }
+<script type="module">
+import mermaid from 'https://esm.sh/mermaid@11/dist/mermaid.esm.min.mjs';
+const dark = matchMedia('(prefers-color-scheme: dark)').matches;
+await document.fonts.ready;
 
-    .eyebrow {
-      display: inline-flex;
-      align-items: center;
-      gap: 6px;
-      font-size: 12px;
-      font-weight: 500;
-      letter-spacing: .06em;
-      text-transform: uppercase;
-      color: #8b7ff5;
-      background: rgba(139,127,245,0.1);
-      border: 1px solid rgba(139,127,245,0.22);
-      padding: 4px 12px;
-      border-radius: 20px;
-      width: fit-content;
-      margin-bottom: 10px;
-    }
+mermaid.initialize({
+  startOnLoad: false,
+  theme: 'base',
+  // Configuraciones críticas para legibilidad y tamaño
+  fontFamily: '"Inter", sans-serif',
+  themeVariables: {
+    darkMode: dark,
+    fontSize: '16px', // Letra más grande y cómoda
+    fontFamily: '"Inter", sans-serif',
+    lineColor: dark ? '#9c9a92' : '#73726c',
+    textColor: '#ffffff',
+    primaryColor: '#3C3489',
+    primaryTextColor: '#ffffff',
+    primaryBorderColor: '#7F77DD',
+    // Aumentamos el padding interno de las cajas para la nueva letra
+    nodePadding: 20, 
+  },
+  // Ajustes de flujo para que no se amontonen las clases
+  class: {
+    useMaxWidth: true,
+    padding: 30
+  },
+  // Esto ayuda a que el motor de renderizado asigne más espacio
+  flowchart: { 
+    htmlLabels: true,
+    curve: 'basis'
+  }
+});
 
-    .dot {
-      width: 6px; height: 6px;
-      border-radius: 50%;
-      background: #8b7ff5;
-      animation: pulse 2.4s ease-in-out infinite;
-    }
+const diagram = `classDiagram
+  direction TB
 
-    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.3} }
+  class Usuario {
+    +UUID id
+    +String email
+    +String password
+    +String nombre
+    +String apellido
+    +Enum rol
+    +String telefono
+    +String avatar
+    +login(email, password)
+    +register(data)
+    +updateProfile(data)
+    +updateNotificationPreferences(prefs)
+  }
 
-    h1 {
-      font-size: 30px;
-      font-weight: 600;
-      letter-spacing: -.02em;
-      color: #e8ecf4;
-      line-height: 1.2;
-      margin-bottom: 12px;
-    }
+  class Notificacion {
+    +UUID id
+    +String titulo
+    +String mensaje
+    +Enum tipo
+    +Boolean leida
+    +String link
+    +create(usuarioId, data)
+    +markAsRead(id)
+    +clearAll(usuarioId)
+  }
 
-    .chips {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      flex-wrap: wrap;
-    }
+  class Consorcio {
+    +UUID id
+    +String nombre
+    +String direccion
+    +Float tasaInteres
+    +DateTime fechaCreacion
+    +addUnit(unidadData)
+    +updateInterestRate(tasa)
+    +getGeneralStats(periodo)
+    +calculateMonthlyExpenses(periodo)
+  }
 
-    .chip {
-      display: inline-flex;
-      align-items: center;
-      gap: 4px;
-      background: #161b27;
-      border: 1px solid rgba(255,255,255,0.08);
-      border-radius: 6px;
-      padding: 4px 10px;
-      font-size: 13px;
-      color: #8891aa;
-    }
+  class Unidad {
+    +UUID id
+    +String numero
+    +String piso
+    +Float coeficiente
+    +calculateCurrentDebt()
+    +assignOwner(usuarioId)
+    +assignTenant(usuarioId)
+    +getHistory()
+  }
 
-    .divider {
-      height: 1px;
-      background: linear-gradient(90deg, transparent, rgba(255,255,255,0.08), transparent);
-      margin: 20px 36px;
-    }
+  class Comprobante {
+    +UUID id
+    +String descripcion
+    +Float monto
+    +String categoria
+    +Enum tipo
+    +DateTime fecha
+    +createVoucher(data)
+    +listByPeriod(consorcioId, periodo)
+  }
 
-    .diagram-wrap {
-      flex: 1;
-      padding: 0 36px 36px;
-    }
+  class Expensa {
+    +UUID id
+    +String periodo
+    +Float montoTotal
+    +Enum estado
+    +calculatePeriodTotal(consId, periodo)
+    +generateBreakdown()
+  }
 
-    .scroll-hint {
-      display: flex;
-      align-items: center;
-      gap: 5px;
-      font-size: 13px;
-      color: #4a5168;
-      margin-bottom: 10px;
-    }
+  class Liquidacion {
+    +UUID id
+    +String periodo
+    +Float expensasComunes
+    +Float expensasExtraordinarias
+    +Float deudaAnterior
+    +Float interes
+    +Float total
+    +Float montoPagado
+    +DateTime fechaVencimiento
+    +Enum estado
+    +generateMass(consId, periodo, fechaVenc)
+    +updateStatus()
+    +calculateInterests()
+  }
 
-    #diagram-box {
-      width: 100%;
-      overflow-x: auto;
-      border-radius: 10px;
-      border: 1px solid rgba(255,255,255,0.1);
-      background: #13171f;
-      padding: 20px;
-      scrollbar-width: thin;
-      scrollbar-color: rgba(255,255,255,0.1) transparent;
-    }
+  class Pago {
+    +UUID id
+    +Float monto
+    +Enum metodoPago
+    +String nroRecibo
+    +String adjunto
+    +Enum estado
+    +reportPayment(data)
+    +approve(id)
+    +cancel(motivo)
+    +generateReceiptNumber()
+  }
 
-    #diagram-box::-webkit-scrollbar { height: 5px; }
-    #diagram-box::-webkit-scrollbar-track { background: transparent; }
-    #diagram-box::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.1); border-radius: 3px; }
+  class Reclamo {
+    +UUID id
+    +String asunto
+    +String descripcion
+    +Enum estado
+    +Enum prioridad
+    +create(data)
+    +changeStatus(nuevoEstado)
+    +assignPriority(nivel)
+  }
 
-    #diagram-box svg {
-      display: block;
-      min-width: 1600px; /* Aumentado para dar aire a las fuentes más grandes */
-    }
+  class Comentario {
+    +UUID id
+    +String contenido
+    +UUID usuarioId
+    +String nombreUsuario
+    +post(reclamoId, contenido)
+    +delete(id)
+  }
 
-    /* AJUSTES DE LEGIBILIDAD PARA EL CONTENIDO DEL SVG */
-    #diagram-box svg text,
-    #diagram-box svg .nodeLabel,
-    #diagram-box svg .edgeLabel,
-    #diagram-box svg .label,
-    #diagram-box svg .classLabel .label,
-    #diagram-box svg g.classGroup text {
-      font-family: 'Inter', system-ui, -apple-system, sans-serif !important;
-      font-size: 14px !important; /* Texto de atributos y métodos más grande */
-      fill: #ffffff !important;   /* Color blanco puro para mejor contraste */
-    }
+  class Anuncio {
+    +UUID id
+    +String titulo
+    +String contenido
+    +DateTime fechaEvento
+    +publish(consId, data)
+  }
 
-    #diagram-box svg .classTitleText {
-      font-family: 'Inter', system-ui, sans-serif !important;
-      font-size: 18px !important; /* Títulos de clase destacados */
-      font-weight: 700 !important;
-      fill: #8b7ff5 !important;   /* Color temático para los títulos */
-    }
+  class Propuesta {
+    +UUID id
+    +String titulo
+    +String descripcion
+    +Float monto
+    +DateTime fechaCierre
+    +Enum estado
+    +registerVote(usuarioId, valor)
+    +closeVoting()
+    +calculateResults()
+  }
 
-    #diagram-box svg .edgeLabel p {
-      font-size: 13px !important;
-      color: #c9c3f8 !important;
-    }
+  class Voto {
+    +UUID id
+    +Boolean valor
+    +cast(usuarioId, valor)
+  }
 
-    #diagram-box svg .edgeTerminals {
-      font-family: 'Inter', system-ui, sans-serif !important;
-      font-size: 12px !important;
-      font-weight: 600 !important;
-    }
+  class Presupuesto {
+    +UUID id
+    +String proveedor
+    +String descripcion
+    +Float monto
+    +String adjunto
+    +upload(propuestaId, data)
+  }
 
-    footer {
-      padding: 14px 36px;
-      border-top: 1px solid rgba(255,255,255,0.06);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      flex-wrap: wrap;
-      gap: 8px;
-    }
+  Consorcio "1" --> "0..*" Unidad : contiene
+  Consorcio "1" --> "0..*" Comprobante : registra
+  Consorcio "1" --> "0..*" Expensa : resume
+  Consorcio "1" --> "0..*" Reclamo : gestiona
+  Consorcio "1" --> "0..*" Anuncio : publica
+  Consorcio "1" --> "0..*" Propuesta : propone
 
-    .footer-l { font-size: 13px; color: #4a5168; }
-    .footer-l strong { color: #6b7590; font-weight: 500; }
-    .footer-r { font-size: 12px; color: #4a5168; font-family: monospace; }
-  </style>
-</head>
-<body>
+  Usuario "1" --> "0..*" Unidad : propietario/inquilino
+  Usuario "1" --> "0..*" Notificacion : recibe
+  Usuario "1" --> "0..*" Voto : emite
+  Usuario "1" --> "0..*" Comentario : escribe
 
-<header>
-  <div>
-    <div class="eyebrow"><span class="dot"></span> Modelo de dominio</div>
-    <h1>Diagrama de clases · Consorsify</h1>
-    <div class="chips">
-      <span class="chip">
-        <svg width="9" height="9" viewBox="0 0 9 9" fill="none"><rect x=".5" y=".5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".7"/><rect x="5" y=".5" width="3.5" height="3.5" rx=".8" fill="currentColor"/><rect x=".5" y="5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".4"/><rect x="5" y="5" width="3.5" height="3.5" rx=".8" fill="currentColor" opacity=".7"/></svg>
-        15 clases
-      </span>
-      <span class="chip">17 relaciones</span>
-    </div>
-  </div>
-</header>
+  Unidad "1" --> "0..*" Liquidacion : genera
+  Unidad "1" --> "0..*" Pago : registra
+  Unidad "1" --> "0..*" Reclamo : origina
 
-<div class="divider"></div>
+  Liquidacion "1" --> "0..*" Pago : incluye
 
-<div class="diagram-wrap">
-  <div class="scroll-hint">
-    <svg width="11" height="11" viewBox="0 0 11 11" fill="none"><path d="M1.5 5.5h8M6.5 3.5l2 2-2 2" stroke="currentColor" stroke-width="1.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    Desplazate horizontalmente para ver todas las clases con claridad
-  </div>
-  <div id="diagram-box">
-    <svg id="my-svg" width="100%" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 2049.1875 1295.5" role="graphics-document document">
-       </svg>
-  </div>
-</div>
+  Reclamo "1" --> "0..*" Comentario : tiene
 
-<footer>
-  <div class="footer-l"><strong>Consorsify</strong> — Arquitectura de software optimizada</div>
-  <div class="footer-r">classDiagram · Inter Font Scaling</div>
-</footer>
+  Propuesta "1" --> "0..*" Presupuesto : adjunta
+  Propuesta "1" --> "0..*" Voto : recibe
+`;
 
-</body>
-</html>
+try {
+  const { svg } = await mermaid.render('cd5-svg', diagram);
+  const container = document.getElementById('cd5');
+  container.innerHTML = svg;
 
+  // Ajuste post-renderizado para bordes redondeados y limpieza visual
+  document.querySelectorAll('#cd5 svg .node rect').forEach(rect => {
+    rect.setAttribute('rx', '10');
+    rect.setAttribute('ry', '10');
+  });
+
+} catch (error) {
+  console.error("Error renderizando Mermaid:", error);
+}
+</script>
